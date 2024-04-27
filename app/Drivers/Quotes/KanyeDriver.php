@@ -19,7 +19,7 @@ class KanyeDriver implements QuoteDriver
         return Cache::remember(
             'kanye.quotes',
             now()->addHour(),
-            fn() => $this->generateQuoteArray()
+            fn() => $this->generateQuoteCollection()
         );
     }
 
@@ -39,7 +39,7 @@ class KanyeDriver implements QuoteDriver
      *
      * @return Collection
      */
-    private function generateQuoteArray(): Collection
+    private function generateQuoteCollection(): Collection
     {
         for ($i = 0; $i < 5; $i++) {
             $response = Http::get('https://api.kanye.rest')->json();

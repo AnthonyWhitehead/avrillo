@@ -2,13 +2,17 @@
 
 namespace Database\Factories;
 
+use App\Traits\OpenSslTrait;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Support\Str;
 
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\token>
  */
 class TokenFactory extends Factory
 {
+    use OpenSslTrait;
+
     /**
      * Define the model's default state.
      *
@@ -17,7 +21,8 @@ class TokenFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'value' => $this->openSslEncrypt(data: Str::random(), cipher: 'aes-256-cbc'),
+            'expires_at' => now()->addMinutes((int)config('tokens.expiry')),
         ];
     }
 }

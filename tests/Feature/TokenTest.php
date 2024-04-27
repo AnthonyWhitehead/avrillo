@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Feature\Token;
+namespace Tests\Feature;
 
 use Illuminate\Support\Carbon;
 use Illuminate\Testing\Fluent\AssertableJson;
