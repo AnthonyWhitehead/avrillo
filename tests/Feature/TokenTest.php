@@ -25,7 +25,7 @@ class TokenTest extends TestCase
         $response = $this->postJson(route('api.token.create', [
             'passphrase' => config('tokens.passphrase'),
             'secret' => config('tokens.secret'),
-        ]))->assertValid();
+        ]))->assertCreated();
 
         $response->assertJson(fn(AssertableJson $json) => $json->has('data')
             ->has('data.token')
