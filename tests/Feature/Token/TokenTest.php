@@ -3,7 +3,6 @@
 namespace Tests\Feature\Token;
 
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Str;
 use Illuminate\Testing\Fluent\AssertableJson;
 use Tests\TestCase;
 
