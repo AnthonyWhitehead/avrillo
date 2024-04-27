@@ -6,7 +6,7 @@ use App\Http\Middleware\ValidateToken;
 use Illuminate\Support\Facades\Route;
 
 Route::name('api.')->group(function () {
-    Route::get('token', [TokenController::class, 'create'])->name('token.create');
+    Route::post('token', [TokenController::class, 'create'])->name('token.create');
 
     Route::name('quotes.')->prefix('/quotes')->middleware(['middleware' => ValidateToken::class])->group(function () {
         Route::get('/', [QuoteController::class, 'index'])->name('index');
