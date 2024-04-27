@@ -3,11 +3,11 @@
 namespace App\Drivers\Quotes;
 
 use App\Interfaces\QuoteDriver;
+use Illuminate\Foundation\Inspiring;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Http;
 
-class KanyeDriver implements QuoteDriver
+class InspirationalDriver implements QuoteDriver
 {
     /**
      * Get quotes
@@ -41,11 +41,6 @@ class KanyeDriver implements QuoteDriver
      */
     private function generateQuoteCollection(): Collection
     {
-        for ($i = 0; $i < 5; $i++) {
-            $response = Http::get('https://api.kanye.rest')->json();
-            $quotes[] = $response['quote'];
-        }
-
-        return collect($quotes);
+        return Inspiring::quotes()->random(5);
     }
 }
