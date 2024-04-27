@@ -13,9 +13,19 @@ class TokenTest extends TestCase
      */
     public function test_create_token(): void
     {
-        $response = $this->get(route('api.token.create'));
+        // Assert invalid with incorrect passphrase and secret
+        $this->postJson(route('api.token.create', [
+            'passphrase' => fake()->word,
+            'secret' => fake()->word,
+        ]))->assertInvalid([
+            'passphrase',
+            'secret',
+        ]);
 
-        $response->assertCreated();
+        $response = $this->postJson(route('api.token.create', [
+            'passphrase' => config('tokens.passphrase'),
+            'secret' => config('tokens.secret'),
+        ]))->assertValid();
 
         $response->assertJson(fn(AssertableJson $json) => $json->has('data')
             ->has('data.token')
