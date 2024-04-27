@@ -56,13 +56,12 @@ class QuoteTest extends TestCase
             ]);
         });
 
-        $oldQuotes = collect([
-            fake()->word,
-            fake()->word,
-            fake()->word,
-            fake()->word,
-            fake()->word,
-        ]);
+        // Generate old quotes
+        $oldQuotes = collect();
+
+        for ($i = 0; $i < 5; $i++) {
+            $oldQuotes->push(fake()->word);
+        }
 
         Cache::remember(
             'kanye.quotes',
