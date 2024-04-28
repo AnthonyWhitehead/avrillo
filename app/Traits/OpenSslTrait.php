@@ -13,7 +13,7 @@ trait OpenSslTrait
      */
     public function openSslEncrypt(string $data, string $cipher): string
     {
-        $tag = config('tokens.tag');
+        $tag = $data;
 
         return base64_encode(openssl_encrypt(
             data: $data,
