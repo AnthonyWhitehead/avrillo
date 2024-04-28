@@ -64,7 +64,7 @@ class QuoteTest extends TestCase
         }
 
         Cache::remember(
-            'kanye.quotes',
+            'quotes',
             now()->addHour(),
             fn() => $oldQuotes
         );

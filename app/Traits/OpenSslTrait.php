@@ -15,12 +15,12 @@ trait OpenSslTrait
     {
         $tag = config('tokens.tag');
 
-        return openssl_encrypt(
+        return base64_encode(openssl_encrypt(
             data: $data,
             cipher_algo: $cipher,
             passphrase: config('tokens.passphrase'),
             iv: config('tokens.secret'),
             tag: $tag,
-        );
+        ));
     }
 }

@@ -21,7 +21,7 @@ class TokenFactory extends Factory
     public function definition(): array
     {
         return [
-            'value' => $this->openSslEncrypt(data: Str::random(), cipher: 'aes-256-cbc'),
+            'value' => base64_encode($this->openSslEncrypt(data: Str::random(), cipher: 'aes-256-cbc')),
             'expires_at' => now()->addMinutes((int)config('tokens.expiry')),
         ];
     }
