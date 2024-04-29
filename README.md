@@ -1,68 +1,85 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Installation
+### Prerequisites
+- composer (globally installed)
+- docker
+- docker-compose
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+### Steps
+1. Clone the repository
+2. cd into project
+3. $ composer install
+4. $ sail up -d
+5. $ sail artisan migrate
+6. copy .env.example to .env
+7. add a 32 character random string to PASSPHRASE in .env
+8. add a 16 character random string to IV in .env
+9. add a time in minutes to TOKEN_EXPIRY in .env to set token expiry time
 
-## About Laravel
+# Usage
+- To use this api you can either use postman or you can do it directly from the swagger ui (see below)
+- You must first make a request to /api/token to get a token
+- Then you can use this token to access the other routes
+- To clean up expired tokens you can run the command: $ sail artisan tokens:delete-expired
+- I've also set up a cron job to run this command every day at midnight to keep the db clean
+- Quotes are all cached for speed
+- See swagger docs for detailed instructions for each endpoint
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+# Api Documentation
+- Swagger documentation can be found at http://localhost/api/documentation
+- YAML file for swagger docs is here: /storage/api-docs/swagger.yaml
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+# Testing
+- $ sail artisan test --parallel
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+# Notes
 
-## Learning Laravel
+### Authentication
+- As there are no users for this app this api feels like it should be a machine to machine api and
+  therefore I have implemented authentication in the style of Oauth 2.0 client_credentials grant type as specified here: https://oauth2.thephpleague.com/authorization-server/which-grant/
+- Tokens are created using openssl_encrypt and currently can be implemented with two different encryption methods using the either the CbcDriver or GcmDriver:
+  - AES-256-CBC
+  - AES-256-GCM
+- To create a token you must send a post request to /api/token (details in swagger docs)
+- Each route is protected by middleware which will check for a `token`variable in the header
+- Tokens last for one hour by default or whatever you set TOKEN_EXPIRY to in the .env file
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+### Manager pattern implementation
+- There are two examples of manager pattern implementations in this app
+  - Quotes
+    - Quotes can be created using either the Kanye api or Laravel's Illuminate\Foundation\Inspiring;
+    - The default driver is Kanye but if you would like to use Laravel quotes you can change the driver in app/Http/Controllers/QuoteController.php
+      by adding driver to facade call e.g. QuoteFacade::driver('inspirational')->getQuotes()
+  - Tokens
+    - As mentioned above there are two encryption algorithms that can be used to create tokens
+    - The default driver is AES-256-CBC but you can change this by updating the driver in app/Http/Controllers/TokenController.php
+       e.g. TokenFacade::driver('gcm')->createToken()
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+### Testing
+- All routes have been feature tested and the middleware has been unit tested
+- The App could definitely have more tests however I feel this has shown enough of my testing ability for this project
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+### Where to look for things
+- app/Managers -  contains the manager pattern implementations
+- app/Drivers - contains the drivers for the manager pattern implementations
+- app/Providers/AppServiceProvider.php - contains the singleton bindings for the manager pattern implementations
+- app/Interfaces - contains the interfaces for the manager and driver classes
+- app/Facades - contains all the custom facades
+- app/Http/Middleware/ValidateToken.php - contains the middleware for validating tokens
+- app/Http/Requests/CreateTokenRequest.php - contains the request validation for creating tokens
+- app/Http/Resources - contains the resources for the api
+- routes/console.php - Where the cron job is triggered to clear expired tokens
+- Tests - where you'd usually expect them
+- app/Traits/OpenSslTrait.php - openssl implementation for encryption
+- everything else - Where you'd expect to find it in a laravel project :)
 
-## Laravel Sponsors
-
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
-
-### Premium Partners
-
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
-
-## Contributing
-
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
-
-## Code of Conduct
-
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
-
-## Security Vulnerabilities
-
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
-
-## License
-
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
-# avrillo
-# avrillo
+### Future Improvements
+- Create a docker image and store in a repo for use instead of cloning project and having to run composer install
+- The authentication could be improved by replicating Laravel Passport Client credentials grant type, i.e. using 
+  an oauth_client table with uuid and secret. 
+- Use of JWT tokens. I was tempted to write my own JWT implementation but though it was out of scope for this project. 
+  I could have also used https://github.com/firebase/php-jwt (which is what Laravel passport uses) however was conscious
+  of the request in the spec to not use any packages.
+- There are no examples in this test of laravel ORM and relationships which would have been nice to show
+- If this was a production app and not a test I'd use Laravel Passport for client credentials grant type or Sanctum for 
+  SPA authentication. 
+  
