@@ -8,8 +8,8 @@
 1. Clone the repository
 2. cd into project
 3. $ composer install
-4. $ sail up -d
-5. $ sail artisan migrate
+4. $ ./vendor/bin/sail up -d
+5. $ ./vendor/bin/sail artisan migrate
 6. copy .env.example to .env
 7. add a 32 character random string to PASSPHRASE in .env
 8. add a 16 character random string to IV in .env
@@ -29,7 +29,7 @@
 - YAML file for swagger docs is here: /storage/api-docs/swagger.yaml
 
 # Testing
-- $ sail artisan test --parallel
+- $ ./vendor/bin/sail artisan test --parallel
 
 # Notes
 
